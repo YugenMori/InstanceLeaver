@@ -1,0 +1,52 @@
+## Interface: 30402
+## Title: InstanceLeaver
+## Version: 10.1.5.1_Classic_Dragonflight
+## Author: Yugen
+## Notes-deDE: Einfacher Rahmen zum Verlassen von Instanzen
+## Notes-enGB: Simple Frame to Leave Instances
+## Notes-enUS: Simple Frame to Leave Instances
+## Notes-esES: Marco simple para dejar instancias
+## Notes-esMX: Marco simple para dejar instancias
+## Notes-frFR: Cadre simple pour laisser des instances
+## Notes-itIT: Cornice semplice per lasciare istanze
+## Notes-koKR: 인스턴스를 떠나는 간단한 프레임
+## Notes-ptBR: Frame Simples Para Sair de Instâncias
+## Notes-ruRU: Простой кадр, чтобы оставить экземпляры
+## Notes-zhCN: 留下实例的简单框架
+## Notes-zhTW: 留下實例的簡單框架
+## SavedVariables: AbyssuiDB
+## SavedVariablesPerCharacter: AbyssUIProfile, AbyssUIAddonSettings, COLOR_MY_UI
+## OptionalDeps: AbyssUI_TexturePack, Ace3
+
+# Wow Versions: Classic - 11404 | LichKingClassic - 30402 | DragonFlight - 100105
+
+# Libs
+libs\LibStub\LibStub.lua
+# libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
+# libs\AceGUI-3.0\AceGUI-3.0.xml
+libs\AceLocale-3.0\AceLocale-3.0.xml
+# libs\AceEvent-3.0\AceEvent-3.0.xml
+# libs\AceAddon-3.0\AceAddon-3.0.xml
+# libs\AceConfig-3.0\AceConfig-3.0.xml
+# libs\AceConsole-3.0\AceConsole-3.0.xml
+# libs\AceDB-3.0\AceDB-3.0.xml
+# libs\AceDBOptions-3.0\AceDBOptions-3.0.xml
+# libs\AceHook-3.0\AceHook-3.0.xml
+
+# Localization
+localization\deDE.lua
+localization\enGB.lua
+localization\enUS.lua
+localization\esES.lua
+localization\esMX.lua
+localization\frFR.lua
+localization\itIT.lua
+localization\koKR.lua
+localization\ptBR.lua
+localization\ruRU.lua
+localization\zhCN.lua
+localization\zhTW.lua
+
+# AbyssUI
+InstanceLeaver.lua
+

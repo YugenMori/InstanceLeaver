@@ -1,0 +1,239 @@
+-- Author: Yugen
+--
+-- Supports any version of wow
+--
+-- Simple Frame to leave instances for AbyssUI
+--
+-- This is a module from AbyssUI that works alone too, not needing the UI itself to run
+--
+--------------------------------------------------------------
+-- Init - Tables - Saves
+local addonName, addonTable = ...
+local L = LibStub("AceLocale-3.0"):GetLocale("InstanceLeaver")
+local GetWoWVersion = ((select(4, GetBuildInfo())))
+--
+local f = CreateFrame("Frame", "AbyssUI_Config", UIParent)
+f:SetSize(50, 50)
+f:RegisterEvent("PLAYER_LOGIN")
+f:SetScript("OnEvent", function(self, event, ...)
+  character = UnitName("player").."-"..GetRealmName()
+  -- Config/Panel
+	if not AbyssUI_Config then
+		local AbyssUI_Config = {}
+	end
+	-- AddonSettings
+	if not AbyssUIAddonSettings then
+		AbyssUIAddonSettings = {}
+	end
+  if not AbyssUIAddonSettings[character] then
+    AbyssUIAddonSettings[character] = {}
+  end
+	-- Color Init
+  if not COLOR_MY_UI then
+      COLOR_MY_UI = {}
+  end
+  if not COLOR_MY_UI[character] then
+      COLOR_MY_UI[character] = {}
+  end
+  if not COLOR_MY_UI[character].Color then
+      COLOR_MY_UI[character].Color = { r = 1, g = 1, b = 1 }
+  end
+end)
+
+local function AbyssUI_Fontification(globalFont, subFont, damageFont)
+local locale = GetLocale()
+local fontName, fontHeight, fontFlags = MinimapZoneText:GetFont()
+local mediaFolder = "Interface\\AddOns\\InstanceLeaver\\textures\\font\\"
+  if (locale == "zhCN") then
+    globalFont  = mediaFolder.."zhCN-TW\\senty.ttf"
+    subFont   	= mediaFolder.."zhCN-TW\\senty.ttf"
+    damageFont  = mediaFolder.."zhCN-TW\\senty.ttf"
+  elseif (locale == "zhTW") then
+    globalFont  = mediaFolder.."zhCN-TW\\senty.ttf"
+    subFont   	= mediaFolder.."zhCN-TW\\senty.ttf"
+    damageFont  = mediaFolder.."zhCN-TW\\senty.ttf"
+  elseif (locale == "ruRU") then
+    globalFont  = mediaFolder.."ruRU\\dejavu.ttf"
+    subFont   	= mediaFolder.."ruRU\\dejavu.ttf"
+    damageFont  = mediaFolder.."ruRU\\dejavu.ttf"
+  elseif (locale == "koKR") then
+    globalFont  = mediaFolder.."koKR\\dxlbab.ttf"
+    subFont   	= mediaFolder.."koKR\\dxlbab.ttf"
+    damageFont  = mediaFolder.."koKR\\dxlbab.ttf"
+  elseif (locale == "frFR" or locale == "deDE" or locale == "enGB" or locale == "enUS" or locale == "itIT" or
+    locale == "esES" or locale == "esMX" or locale == "ptBR") then
+    globalFont  = mediaFolder.."global.ttf"
+    subFont   	= mediaFolder.."npcfont.ttf"
+    damageFont  = mediaFolder.."damagefont.ttf"
+  else
+    globalFont  = fontName
+    subFont   	= fontName
+    damageFont  = fontName
+  end
+  return globalFont, subFont, damageFont
+end
+local globalFont, subFont, damageFont = AbyssUI_Fontification(globalFont, subFont, damageFont)
+local _G = _G 
+local leaveString 		= _G["LEAVE_VEHICLE"]
+--local teleportString	= _G["QUESTS_LABEL"]
+local closeString 		= _G["CLOSE"]
+local dialogFrameTexture 		= "Interface\\Addons\\InstanceLeaver\\textures\\extra\\dialogFrameTexture"
+--local dialogFrameTextureBorder 	= "Interface\\DialogFrame\\UI-DialogBox-Background"
+--------------------------------------------------------------
+-- ApplyFonts
+local function AbyssUI_ApplyFonts(self)
+  self:SetTextColor(31/255, 31/255, 31/255)
+  self:SetFont(globalFont, 13)
+  self:SetShadowColor(45/255, 45/255, 45/255)
+  self:SetShadowOffset(0, 0)
+end
+--------------------------------------------------------------
+local InstanceLeave_DynamicFrame = CreateFrame("Frame", "$parentInstanceLeave_DynamicFrame", UIParent)
+InstanceLeave_DynamicFrame:SetClampedToScreen(true)
+InstanceLeave_DynamicFrame:SetMovable(true)
+InstanceLeave_DynamicFrame:EnableMouse(true)
+InstanceLeave_DynamicFrame:SetWidth(480)
+InstanceLeave_DynamicFrame:SetHeight(200)
+InstanceLeave_DynamicFrame:RegisterForDrag("LeftButton")
+InstanceLeave_DynamicFrame:SetFrameLevel(300)
+InstanceLeave_DynamicFrame:SetFrameStrata("HIGH")
+InstanceLeave_DynamicFrame:SetPoint("CENTER", 0, -140)
+InstanceLeave_DynamicFrame.text = InstanceLeave_DynamicFrame.text or InstanceLeave_DynamicFrame:CreateFontString(nil, "ARTWORK", "QuestMapRewardsFont")
+InstanceLeave_DynamicFrame.text:SetAllPoints(InstanceLeave_DynamicFrame)
+InstanceLeave_DynamicFrame.text:SetText(L["This instance is completed! Want to leave?\n"..
+"You can also teleport out/in or just close this frame"])
+InstanceLeave_DynamicFrame.text:SetFont(globalFont, 18)
+InstanceLeave_DynamicFrame.text:SetTextColor(248/255, 248/255, 248/255)
+InstanceLeave_DynamicFrame.text:SetShadowColor(0, 0, 0)
+InstanceLeave_DynamicFrame.text:SetShadowOffset(1, -1)
+InstanceLeave_DynamicFrame:Hide()
+InstanceLeave_DynamicFrame:SetScript("OnDragStart", InstanceLeave_DynamicFrame.StartMoving)
+InstanceLeave_DynamicFrame:SetScript("OnDragStop", InstanceLeave_DynamicFrame.StopMovingOrSizing)
+-- Border --
+--[[
+local LeaveBorder = InstanceLeave_DynamicFrame:CreateTexture(nil, "BACKGROUND")
+LeaveBorder:SetTexture(dialogFrameTexture)
+LeaveBorder:SetPoint("TOPLEFT", -3, 3)
+LeaveBorder:SetPoint("BOTTOMRIGHT", 3, -3)
+
+local BorderBody = InstanceLeave_DynamicFrame:CreateTexture(nil, "ARTWORK")
+BorderBody:SetTexture(dialogFrameTexture)
+BorderBody:SetAllPoints(InstanceLeave_DynamicFrame)
+BorderBody:SetVertexColor(0.34, 0.34, 0.34, 0.7)
+--]]
+-- Texture --
+local Texture = InstanceLeave_DynamicFrame:CreateTexture(nil, "ARTWORK")
+Texture:SetTexture(dialogFrameTexture)
+Texture:SetAllPoints(InstanceLeave_DynamicFrame)
+InstanceLeave_DynamicFrame.texture = Texture
+
+-- Button --
+local f = CreateFrame("Frame", nil)
+f:RegisterEvent("PLAYER_ENTERING_WORLD")
+f:SetScript("OnEvent", function() 
+	local FrameButton = CreateFrame("Button","$parentFrameButton", InstanceLeave_DynamicFrame, "UIPanelButtonTemplate")
+	FrameButton:SetHeight(24)
+	FrameButton:SetWidth(100)
+	FrameButton:SetPoint("BOTTOM", InstanceLeave_DynamicFrame, "BOTTOM", -150, 15)
+	FrameButton.text = FrameButton.text or FrameButton:CreateFontString(nil, "ARTWORK", "QuestMapRewardsFont")
+	--FrameButton.text:SetFont(globalFont, 14)
+	FrameButton.text:SetPoint("CENTER", FrameButton, "CENTER", 0, 0)
+	FrameButton.text:SetText(leaveString)
+		if (AbyssUIAddonSettings.FontsValue == true and AbyssUIAddonSettings.ExtraFunctionDisableFontWhiteText ~= true) then
+		  AbyssUI_ApplyFonts(FrameButton.text)
+		else
+		  FrameButton.text:SetFont(globalFont, 14)
+		  FrameButton.text:SetTextColor(248/255, 248/255, 248/255)
+		  FrameButton.text:SetShadowColor(0, 0, 0)
+		  FrameButton.text:SetShadowOffset(1, -1)
+		end
+	FrameButton:SetScript("OnClick", function()
+		DoEmote("THANK","none")
+		local isComplete = IsLFGComplete()
+		local inInstance, instanceType = IsInInstance()
+		if (isComplete and (instanceType == "party" or instanceType == "raid")) then 
+			C_PartyInfo.LeaveParty()
+			UIFrameFadeIn(InstanceLeave_DynamicFrame, 1, 1, 0)
+			C_Timer.After(2, function()
+				InstanceLeave_DynamicFrame:Hide()
+		    end)
+		elseif (not instanceType == "none" and not (instanceType == "party" or instanceType == "raid")) then 
+			UIFrameFadeIn(InstanceLeave_DynamicFrame, 1, 1, 0)
+			C_Timer.After(2, function()
+				InstanceLeave_DynamicFrame:Hide()
+		    end)
+		elseif (isComplete and instanceType == "pvp") then 
+			LeaveBattlefield() 
+			UIFrameFadeIn(InstanceLeave_DynamicFrame, 1, 1, 0)
+			C_Timer.After(2, function()
+				InstanceLeave_DynamicFrame:Hide()
+		    end)
+		else
+			UIFrameFadeIn(InstanceLeave_DynamicFrame, 1, 1, 0)
+			C_Timer.After(2, function()
+				InstanceLeave_DynamicFrame:Hide()
+		    end)
+		end
+	end)
+
+	local FrameButton = CreateFrame("Button","$parentFrameButton", InstanceLeave_DynamicFrame, "UIPanelButtonTemplate")
+	FrameButton:SetHeight(24)
+	FrameButton:SetWidth(100)
+	FrameButton:SetPoint("BOTTOM", InstanceLeave_DynamicFrame, "BOTTOM", 0, 15)
+	FrameButton.text = FrameButton.text or FrameButton:CreateFontString(nil, "ARTWORK", "QuestMapRewardsFont")
+	--FrameButton.text:SetFont(globalFont, 14)
+	FrameButton.text:SetPoint("CENTER", FrameButton, "CENTER", 0, 0)
+	FrameButton.text:SetText(L["Teleport"])
+	    if (AbyssUIAddonSettings.FontsValue == true and AbyssUIAddonSettings.ExtraFunctionDisableFontWhiteText ~= true) then
+	      AbyssUI_ApplyFonts(FrameButton.text)
+	    else
+	      FrameButton.text:SetFont(globalFont, 14)
+	      FrameButton.text:SetTextColor(248/255, 248/255, 248/255)
+	      FrameButton.text:SetShadowColor(0, 0, 0)
+	      FrameButton.text:SetShadowOffset(1, -1)
+	    end
+	FrameButton:SetScript("OnClick", function()
+		local isDg  = IsInLFGDungeon()
+		local isPt  = IsInGroup()
+		local isLFG = IsPartyLFG()
+		if (isDg and isLFG and isPt) then LFGTeleport(isDg)
+		elseif (isLFG and isPt and not isDg) then LFGTeleport(isDg)
+		elseif (not isDg and not isLFG and not isPt) then InstanceLeave_DynamicFrame:Hide()
+		else
+			InstanceLeave_DynamicFrame:Hide()
+		end
+	end)
+
+	local FrameButton = CreateFrame("Button","$parentFrameButton", InstanceLeave_DynamicFrame, "UIPanelButtonTemplate")
+	FrameButton:SetHeight(24)
+	FrameButton:SetWidth(100)
+	FrameButton:SetPoint("BOTTOM", InstanceLeave_DynamicFrame, "BOTTOM", 150, 15)
+	FrameButton.text = FrameButton.text or FrameButton:CreateFontString(nil, "ARTWORK", "QuestMapRewardsFont")
+	--FrameButton.text:SetFont(globalFont, 14)
+	FrameButton.text:SetPoint("CENTER", FrameButton, "CENTER", 0, 0)
+	FrameButton.text:SetText(closeString)
+	    if (AbyssUIAddonSettings.FontsValue == true and AbyssUIAddonSettings.ExtraFunctionDisableFontWhiteText ~= true) then
+	      AbyssUI_ApplyFonts(FrameButton.text)
+	    else
+	   	  FrameButton.text:SetFont(globalFont, 14)
+	      FrameButton.text:SetTextColor(248/255, 248/255, 248/255)
+	      FrameButton.text:SetShadowColor(0, 0, 0)
+	      FrameButton.text:SetShadowOffset(1, -1)
+	    end
+	FrameButton:SetScript("OnClick", function()
+		InstanceLeave_DynamicFrame:Hide()
+	end)
+end)
+-- DynamicFrame --
+if (GetWoWVersion > 12400) then
+	local frame = CreateFrame("Frame", "$parentFrame", nil)
+	frame:RegisterEvent("LFG_COMPLETION_REWARD")
+	frame:SetScript("OnEvent", function(self, event)
+		if (event == "LFG_COMPLETION_REWARD" and AbyssUIAddonSettings.ExtraFunctionInstanceLeave == true) then
+			UIFrameFadeIn(InstanceLeave_DynamicFrame, 1, 0, 1)
+		else 
+			return nil
+		end
+	end)
+end
+-- End
